@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juego del Destino</title>
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Sans+MS&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #141518;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+            text-align: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .container {
+            display: flex;
+            gap: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .button {
+            background: linear-gradient(45deg, #a52424, #470c8b);
+            color: white;
+            padding: 20px 40px;
+            border: none;
+            cursor: pointer;
+            font-size: 2em;
+            border-radius: 50px;
+            box-shadow: 0px 0px 15px rgba(255, 20, 147, 0.7);
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        }
+
+        .button:hover {
+            transform: scale(1.2);
+            box-shadow: 0px 0px 25px rgba(255, 20, 147, 1);
+        }
+
+        #mensajeFinal {
+            display: none;
+            font-size: 2.5em;
+            animation: fadeIn 2s ease-in-out;
+            position: relative;
+            z-index: 2;
+        }
+
+        .gif-container, .perder-container {
+            display: none;
+            margin-top: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .gif-container img, .perder-container img {
+            width: 250px;
+            height: auto;
+            border-radius: 15px;
+        }
+
+        .perder-container p {
+            font-size: 2em;
+            margin-bottom: 15px;
+        }
+        
+        .small-button {
+            font-size: 1.2em;
+            padding: 10px 20px;
+            margin-top: 15px;
+            background: linear-gradient(45deg, #ff416c, #ff4b2b);
+            border-radius: 30px;
+            box-shadow: 0px 0px 10px rgba(255, 69, 0, 0.7);
+        }
+
+        .small-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0px 0px 15px rgba(255, 69, 0, 1);
+        }
+
+
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <h1>Elige una</h1>
+    <div class="container" id="botones">
+        <button class="button" onclick="ganarJuego()">❤️</button>
+        <button class="button" onclick="perderJuego()">❓</button>
+    </div>
+    <p id="mensajeFinal">¡Te quiero mucho! 💖</p>
+    <div class="gif-container" id="gifContainer">
+        <img id="gif" src="" alt="GIF romántico">
+        <button id="botonVuelve" class="button small-button" onclick="reiniciarJuego()" style="display: none;">Vuelve</button>
+
+    </div>
+    
+    
+    <div class="perder-container" id="perderContainer">
+        <p>Si eliges esto la Tierra explotará, ¿estás segura? 🌍💥</p>
+        <img id="imagenPerdedor" src="https://i.pinimg.com/1200x/66/a6/d8/66a6d8b6bd704e4e2426fe1d6be17139.jpg" alt="Explosión">
+        <br>
+        <button class="button" onclick="reiniciarJuego()">Intentar de nuevo</button>
+    </div>
+    
+    <script>
+        function ganarJuego() {
+            document.getElementById('mensajeFinal').style.display = 'block';
+            document.getElementById('gifContainer').style.display = 'block';
+            document.getElementById('gif').src = 'https://media.tenor.com/td4iad0wsJgAAAAj/fofo-cute.gif';
+            document.getElementById('botones').style.display = 'none';
+
+            // Asegurar que el botón "Vuelve" se muestre
+            document.getElementById('botonVuelve').style.display = 'block';
+        }
+
+        function perderJuego() {
+            document.getElementById('botones').style.display = 'none';
+            document.getElementById('perderContainer').style.display = 'block';
+        }
+
+        function reiniciarJuego() {
+            document.getElementById('botones').style.display = 'flex';
+            document.getElementById('perderContainer').style.display = 'none';
+            document.getElementById('gifContainer').style.display = 'none';
+            document.getElementById('mensajeFinal').style.display = 'none';
+
+            // Ocultar el botón "Vuelve"
+            document.getElementById('botonVuelve').style.display = 'none';
+        }
+
+        // Animación de estrellas fugaces
+        const canvas = document.getElementById("canvas");
+        const ctx = canvas.getContext("2d");
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const stars = [];
+
+        function createStar() {
+            return {
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                size: Math.random() * 2 + 1,
+                speedX: Math.random() * 2 - 1,
+                speedY: Math.random() * 2 + 1,
+                opacity: Math.random() * 0.5 + 0.3
+            };
+        }
+
+        for (let i = 0; i < 50; i++) {
+            stars.push(createStar());
+        }
+
+        function animateStars() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "white";
+            stars.forEach(star => {
+                ctx.globalAlpha = star.opacity;
+                ctx.beginPath();
+                ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+                ctx.fill();
+                star.x += star.speedX;
+                star.y += star.speedY;
+                if (star.y > canvas.height) {
+                    Object.assign(star, createStar());
+                    star.y = 0;
+                }
+            });
+            requestAnimationFrame(animateStars);
+        }
+
+        animateStars();
+
+        let hearts = [];
+
+        function createHeart() {
+            return {
+                x: Math.random() * canvas.width,
+                y: canvas.height + 10, 
+                size: Math.random() * 8 + 5, 
+                speedY: Math.random() * 2 + 1, 
+                opacity: Math.random() * 0.5 + 0.5, 
+                color: `hsl(0, 85%, ${75 + Math.random() * 10}%)` 
+            };
+        }
+
+        function drawHeart(ctx, x, y, size, color, opacity) {
+            ctx.globalAlpha = opacity;
+            ctx.fillStyle = color;
+            ctx.beginPath();
+
+            ctx.moveTo(x, y + size / 4);
+            ctx.bezierCurveTo(
+                x - size, y - size / 2,   // Punto de control izquierdo
+                x - size, y + size / 2,   // Punto de control inferior izquierdo
+                x, y + size               // Punta del corazón
+            );
+            ctx.bezierCurveTo(
+                x + size, y + size / 2,   // Punto de control inferior derecho
+                x + size, y - size / 2,   // Punto de control derecho
+                x, y + size / 4           // Centro del corazón
+            );
+
+            ctx.fill();
+        }
+
+
+        // Agrega nuevos corazones cada cierto tiempo
+        setInterval(() => {
+            if (hearts.length < 50) {
+                hearts.push(createHeart());
+            }
+        }, 200);
+
+        // Modifica la animación para incluir los corazones
+        // Modifica la animación para incluir los corazones
+        function animateScene() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Dibuja estrellas
+            ctx.fillStyle = "white";
+            stars.forEach(star => {
+                ctx.globalAlpha = star.opacity;
+                ctx.beginPath();
+                ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+                ctx.fill();
+                star.x += star.speedX;
+                star.y += star.speedY;
+                if (star.y > canvas.height) {
+                    Object.assign(star, createStar());
+                    star.y = 0;
+                }
+            });
+
+            // Dibuja corazones
+            // Dibuja corazones con la nueva función
+            hearts.forEach((heart, index) => {
+                drawHeart(ctx, heart.x, heart.y, heart.size, heart.color, heart.opacity);
+                heart.y -= heart.speedY; // Se mueven hacia arriba
+                heart.opacity -= 0.002; // Se desvanecen lentamente
+            });
+
+
+            // Elimina corazones que ya desaparecieron
+            hearts = hearts.filter(heart => heart.opacity > 0);
+
+            requestAnimationFrame(animateScene);
+        }
+
+            // Inicia la animación combinada
+            animateScene();
+
+
+    </script>
+</body>
+</html>

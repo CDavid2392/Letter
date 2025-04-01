@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carta Virtual</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+       body {
+        background-color: #222222;
+        color: #fff;
+        font-family: 'Playfair Display', serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        text-align: center;
+        flex-direction: column;
+        overflow-x: hidden;
+        width: 100vw;
+        max-width: 100%;
+        padding: 10px;
+    }
+
+    .name {
+        font-size: 3.5em;
+        font-weight: bold;
+        background: linear-gradient(45deg, #ff4d4d, #ff8c00, #ff1493);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: 0px 0px 10px rgba(255, 20, 147, 0.8);
+        opacity: 0;
+        animation: fadeIn 3s forwards;
+        max-width: 90%;
+    }
+
+    @keyframes fadeIn {
+        0% { opacity: 0; transform: scale(0.5); }
+        100% { opacity: 1; transform: scale(1); }
+    }
+
+    .button-container {
+        margin-top: 20px;
+        opacity: 0;
+        animation: fadeInButton 3s forwards 2.5s;
+    }
+
+    .button {
+        background: linear-gradient(45deg, #ff4d4d, #ff1493);
+        color: white;
+        padding: 15px 30px;
+        border: none;
+        cursor: pointer;
+        font-size: 1.2em;
+        border-radius: 50px;
+        box-shadow: 0px 0px 10px rgba(255, 20, 147, 0.7);
+        transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    }
+
+    .button:hover {
+        transform: scale(1.1);
+        box-shadow: 0px 0px 20px rgba(255, 20, 147, 1);
+    }
+
+    .text-container {
+        display: none;
+        width: 80%;
+        max-width: 600px;
+        height: auto;
+    }
+
+    .text {
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity 1s ease-in-out, transform 1s ease-in-out;
+        font-size: 1.2em;
+        line-height: 1.5em;
+        text-align: center;
+    }
+
+    .show {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .heart {
+        color: red;
+        font-size: 24px;
+        animation: pulse 1.5s infinite;
+        display: none;
+    }
+
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.3); }
+        100% { transform: scale(1); }
+    }
+
+    @keyframes fadeInButton {
+        0% { opacity: 0; transform: translateY(20px); }
+        100% { opacity: 1; transform: translateY(0); }
+    }
+
+    #particles {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: -1; 
+    }
+
+    @media screen and (max-width: 768px) {
+        .name {
+            font-size: 2.2em; 
+            max-width: 100%;
+        }
+
+        .button {
+            padding: 12px 20px;
+            font-size: 1em;
+        }
+
+        .text-container {
+            width: 95%;
+            max-width: 100%;
+        }
+
+        .text {
+            font-size: 1em;
+            text-align: center;
+        }
+    }
+
+    
+    .heart-button {
+        margin-top: 20px;
+        display: none;
+        color: white;
+        font-size: 1em;
+        border: none;
+        cursor: pointer;
+        text-align: center;
+        position: relative;
+        width: 120px;
+        height: 110px;
+        background: linear-gradient(45deg, #ff4d4d, #ff1493);
+        box-shadow: 0px 0px 20px rgba(255, 20, 147, 0.8);
+        transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+
+        /* Centrar en la pantalla */
+        left: 50%;
+        transform: translateX(-50%);
+
+        /* Suavizar la forma del corazón */
+        clip-path: polygon(
+            50% 18%, 78% 10%, 95% 25%, 100% 45%, 
+            90% 68%, 75% 85%, 50% 100%, 25% 85%, 
+            10% 68%, 0% 45%, 5% 25%, 22% 10%
+        );
+    }
+
+    .heart-button::before,
+    .heart-button::after {
+        content: "";
+        position: absolute;
+        width: 70px;
+        height: 70px;
+        background: linear-gradient(45deg, #ff4d4d, #ff1493);
+        border-radius: 50%;
+        box-shadow: 0px 0px 20px rgba(255, 20, 147, 0.8);
+    }
+
+    .heart-button::before {
+        top: -30px;
+        left: 10px;
+    }
+
+    .heart-button::after {
+        top: -35px;
+        right: 10px;
+    }
+
+    .heart-button:hover {
+        transform: translateX(-50%) scale(1.1);
+        box-shadow: 0px 0px 30px rgba(255, 20, 147, 1);
+    }
+
+
+    .heart-button span {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 0.9em;
+        font-weight: bold;
+        text-shadow: 0px 0px 5px rgba(255, 255, 255, 0.8);
+    }
+
+
+
+    </style>
+</head>
+<body>
+    <div class="name" id="name">Hola, Me gustaría decirte algo</div>
+    <div class="button-container" id="button-container">
+        <button class="button" onclick="startLetter()">Leer</button>
+    </div>
+    <div class="text-container" id="text-container">
+        <canvas id="particles"></canvas>
+        <p id="text1" class="text">Laura.</p>
+        <p id="text2" class="text">Lamento molestarte, de verdad espero no interrumpir ni incomodarte con este mensaje.</p>
+        <p id="text3" class="text">No es mi intención. Solo quiero compartir algo que ha estado en mi mente y corazón desde hace tiempo.</p>
+        <p id="text4" class="text">Como sabes, en su momento te hice una promesa: darte un anillo. Era y es algo especial para mí, un símbolo de lo que significaste y aun significas en mi vida. </p>
+        <p id="text5" class="text">Logré conseguirlo casi tal como quería, incluso lo mandé a bendecir, porque en verdad tiene detrás un gran significado</p>
+        <p id="text6" class="text">Son unos anillos a juego, casi pensados para nosotros.</p>
+        <p id="text7" class="text">Sabes, a veces la vida te pone frente a alguien que ilumina todo, que cambia tu forma de ver el mundo, pero no te permite quedarte a su lado y todo se viene abajo</p>
+        <p id="text8" class="text">Y aunque he tratado de asimilar un futuro donde no estás y he fallado, eso no significa que me guste la idea de dejarte en el pasado.</p>
+        <p id="text9" class="text">Posiblemente te parezca extraño que te escriba ahora, pero si no lo hice antes es porque sentí que la distancia entre nosotros había crecido y, de algún modo, eso también dolía. Aun así, lo hago una vez más, por el motivo de la promesa del anillo</p>
+        <p id="text10" class="text">Sé que posiblemente no quieras verme ni saber nada de mí, y lo entiendo. No quiero incomodarte ni obligarte a nada, solo quería preguntarte qué quieres que haga con el anillo.</p>
+        <p id="text11" class="text">Siento que, de alguna manera, te pertenece más a ti que a mí, y no tengo la fuerza para simplemente deshacerme de algo tan valioso y con tanto significado.</p>
+        <p id="text12" class="text">Si decides que quieres recibirlo, solo te pediría un par de minutos para entregártelo. No sería nada más, solo el momento de dártelo y ya para minimizar el quizá incomodarte.</p>
+        <p id="text13" class="text">Tú me dirías cuándo y dónde, cualquier día está bien para mí. Si prefieres que no sea en persona o si simplemente ya no lo quieres, también lo entenderé.</p>
+        <p id="text14" class="text">No quiero que esto sea una carga ni una incomodidad para ti, solo que sepas que, de alguna forma, hay cosas que no se desvanecen tan fácil.</p>
+        <p id="text15" class="text">Cuídate mucho.</p>
+        <button class="heart-button" id="heart-button" onclick="window.location.href='juego.html'">
+            <span>Presióname</span>
+        </button>
+        
+
+    </div>
+    
+    <script>
+        function resizeCanvas() {
+            const canvas = document.getElementById("particles");
+            canvas.width = window.innerWidth;
+            canvas.height = document.body.scrollHeight;
+        }
+
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * window.innerWidth;
+                this.y = Math.random() * document.documentElement.scrollHeight;
+                this.size = Math.random() * 3 + 1;
+                this.speedY = Math.random() * 1.2 + 0.2;
+
+                const colors = [
+                    "rgba(255, 20, 147, 0.9)",   
+                    "rgba(255, 69, 0, 0.9)",    
+                    "rgba(255, 165, 0, 0.9)"   
+                ];
+                this.color = colors[Math.floor(Math.random() * colors.length)];
+            }
+
+            update() {
+                this.y += this.speedY;
+                if (this.y > document.documentElement.scrollHeight) {
+                    this.y = Math.random() * -50;
+                    this.x = Math.random() * window.innerWidth;
+                }
+            }
+
+            draw(ctx) {
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+
+        function startParticles() {
+            const canvas = document.getElementById("particles");
+            const ctx = canvas.getContext("2d");
+            resizeCanvas();
+
+            let particlesArray = [];
+            for (let i = 0; i < 150; i++) {
+                particlesArray.push(new Particle());
+            }
+
+            function animateParticles() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                particlesArray.forEach((particle) => {
+                    particle.update();
+                    particle.draw(ctx);
+                });
+                requestAnimationFrame(animateParticles);
+            }
+            animateParticles();
+        }
+
+
+        function startLetter() {
+            document.getElementById("button-container").style.display = "none"; 
+            document.getElementById("text-container").style.display = "block"; 
+
+            startParticles(); 
+
+            const texts = document.querySelectorAll(".text");
+            let index = 0;
+            let delay = 1000;
+
+            function showText() {
+                if (index < texts.length) {
+                    texts[index].classList.add("show");
+                    index++;
+                    setTimeout(showText, delay);
+                    delay += 200;
+                } else {
+                    document.getElementById("heart-button").style.display = "block"; 
+                }
+            }
+
+            showText();
+        }
+
+
+    </script>
+  
+</body>
+</html>
